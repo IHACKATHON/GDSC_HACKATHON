@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
 
 @Entity
 @Getter
@@ -23,7 +22,7 @@ public class Account {
     private int balance;
 
     @OneToOne(mappedBy = "account")
-    private User user;
+    private Member member;
 
 
 }

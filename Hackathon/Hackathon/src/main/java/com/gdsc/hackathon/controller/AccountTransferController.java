@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class AccountTransferController {
+
     AccountTransferService accountTransferService;
 
     @PostMapping("/account/transfer")

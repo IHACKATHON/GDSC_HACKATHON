@@ -1,8 +1,9 @@
 package com.gdsc.hackathon.dto;
 
 import com.gdsc.hackathon.domain.Account;
+import com.gdsc.hackathon.domain.Bank;
 import com.gdsc.hackathon.domain.Role;
-import com.gdsc.hackathon.domain.User;
+import com.gdsc.hackathon.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,23 +20,25 @@ public class BusinessUserRequestDto {
     private String name;
     private String accountNumber;
     private int balance;
-    public User toBusinessUser(PasswordEncoder passwordEncoder) {
-        User user = User.builder()
+    private Bank bank;
+    public Member toBusinessUser(PasswordEncoder passwordEncoder) {
+        Member member = Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.ROLE_BUSINESS)
                 .name(name)
+                .bank(bank)
                 .build();
 
         Account account = new Account();
         account.setAccountNumber(accountNumber);
         account.setBalance(balance);
-        account.setUser(user);
+        account.setMember(member);
 
-        user.setAccount(account);
+        member.setAccount(account);
 
 
-        return user;
+        return member;
     }
 
 

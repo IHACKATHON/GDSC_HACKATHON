@@ -25,5 +25,4 @@ public class QRService {
         return outputStream.toByteArray();
     }
 
-
 }

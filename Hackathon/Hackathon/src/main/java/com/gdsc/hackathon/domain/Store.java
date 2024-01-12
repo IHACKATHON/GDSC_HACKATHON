@@ -3,11 +3,13 @@ package com.gdsc.hackathon.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 public class Store {
@@ -38,5 +40,8 @@ public class Store {
     // Menu 엔티티를 참조하는 필드, 하나의 가게가 여러 개의 메뉴를 가질 수 있음.
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Menu> menus = new ArrayList<>();
+
+    @OneToOne(mappedBy = "store")
+    private Member member;
 
 }

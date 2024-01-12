@@ -1,10 +1,11 @@
 package com.gdsc.hackathon.service;
 
 
-import com.gdsc.hackathon.domain.User;
+import com.gdsc.hackathon.domain.Account;
 import com.gdsc.hackathon.dto.*;
 import com.gdsc.hackathon.jwt.TokenProvider;
-import com.gdsc.hackathon.repository.UserRepository;
+import com.gdsc.hackathon.repository.AccountRepository;
+import com.gdsc.hackathon.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,35 +19,36 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class MemberService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final MailService mailService;
+    private final AccountRepository accountRepository;
 
     @Transactional
-    public UserResponseDto signup(UserRequestDto userRequestDto){
-        if(userRepository.existsByEmail(userRequestDto.getEmail())){
+    public MemberResponseDto signup(MemberRequestDto memberRequestDto){
+        if(memberRepository.existsByEmail(memberRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
         }
-        User user = userRequestDto.toUser(passwordEncoder);
-        return UserResponseDto.of(userRepository.save(user));
+        com.gdsc.hackathon.domain.Member member = memberRequestDto.toUser(passwordEncoder);
+        return MemberResponseDto.of(this.memberRepository.save(member));
     }
 
     @Transactional
-    public UserResponseDto businessSignup(BusinessUserRequestDto businessUserRequestDto){
-        if(userRepository.existsByEmail(businessUserRequestDto.getEmail())){
+    public MemberResponseDto businessSignup(BusinessUserRequestDto businessUserRequestDto){
+        if(memberRepository.existsByEmail(businessUserRequestDto.getEmail())){
             throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
         }
-        User user = businessUserRequestDto.toBusinessUser(passwordEncoder);
-        return UserResponseDto.of(userRepository.save(user));
+        com.gdsc.hackathon.domain.Member member = businessUserRequestDto.toBusinessUser(passwordEncoder);
+        return MemberResponseDto.of(this.memberRepository.save(member));
     }
 
     @Transactional
-    public TokenDto login(UserRequestDto userRequestDto){
-        UsernamePasswordAuthenticationToken authenticationToken = userRequestDto.toAuthentication();
+    public TokenDto login(MemberRequestDto memberRequestDto){
+        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
@@ -57,22 +59,22 @@ public class UserService {
 
     @Transactional
     public String findEmailByName(String name){
-        User user = userRepository.findByName(name)
+        com.gdsc.hackathon.domain.Member member = this.memberRepository.findByName(name)
                 .orElseThrow(() -> new RuntimeException("해당하는 이름의 사용자를 찾을 수 없습니다."));
-        return user.getEmail();
+        return member.getEmail();
     }
     @Transactional
-    public Optional<User> getUserById(long id){
-        return userRepository.findUserById(id);
+    public Optional<com.gdsc.hackathon.domain.Member> getUserById(long id){
+        return memberRepository.findUserById(id);
     }
 
     @Transactional
     public String findPasswordByEmail(String email){
-        User user = userRepository.findByEmail(email)
+        com.gdsc.hackathon.domain.Member member = this.memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("해당하는 이메일의 사용자를 찾을 수 없습니다."));
         String temporaryPassword = mailService.sendPassword(email);
-        user.setPassword(passwordEncoder.encode(temporaryPassword));
-        userRepository.save(user);
+        member.setPassword(passwordEncoder.encode(temporaryPassword));
+        this.memberRepository.save(member);
         return temporaryPassword;
     }
 
@@ -98,12 +100,24 @@ public class UserService {
         String currentPassword = changePasswordDto.getCurrentPassword();
         String newPassword = changePasswordDto.getNewPassword();
 
-        User user = userRepository.findById(Long.valueOf(userEmail))
+        com.gdsc.hackathon.domain.Member member = this.memberRepository.findById(Long.valueOf(userEmail))
                 .orElseThrow(() -> new RuntimeException("현재 로그인한 사용자를 찾을 수 없습니다."));
-        if(!passwordEncoder.matches(currentPassword, user.getPassword())){
+        if(!passwordEncoder.matches(currentPassword, member.getPassword())){
             throw new RuntimeException("현재 비밀번호가 일치하지 않습니다.");
         }
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user); 
+        member.setPassword(passwordEncoder.encode(newPassword));
+        this.memberRepository.save(member);
+    }
+
+    @Transactional
+    public int getAccountBalance() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = authentication.getName();
+
+        com.gdsc.hackathon.domain.Member member = this.memberRepository.findById(Long.valueOf(userEmail))
+                .orElseThrow(() -> new RuntimeException("현재 로그인한 사용자를 찾을 수 없습니다."));
+
+        Account account = member.getAccount();
+        return account.getBalance();
     }
 }

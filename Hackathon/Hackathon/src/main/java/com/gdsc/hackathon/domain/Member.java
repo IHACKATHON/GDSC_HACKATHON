@@ -10,7 +10,7 @@
     @Setter
     @Getter
     @NoArgsConstructor
-    public class User {
+    public class Member {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "USER_ID")
@@ -31,15 +31,24 @@
         private Role role;
 
         @OneToOne(cascade = CascadeType.ALL)
-        @JoinColumn(name = "ACCOUNT_ID")
+        @JoinColumn(name = "ACCOUNT_ID", nullable = false)
         private Account account;
 
+        @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "STORE_ID")
+        private Store store;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name = "BANK", nullable = false)
+        private Bank bank;
+
         @Builder
-        public User(String email, String password, String name,Role role, Account account){
+        public Member(String email, String password, String name, Role role, Bank bank,Account account){
             this.email = email;
             this.password = password;
             this.name = name;
             this.role = role;
+            this.bank = bank;
             this.account = new Account();
         }
 
