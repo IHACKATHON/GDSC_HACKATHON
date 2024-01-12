@@ -2,6 +2,7 @@ package com.gdsc.hackathon.service;
 
 import com.gdsc.hackathon.domain.Account;
 import com.gdsc.hackathon.dto.TransferRequestDto;
+import com.gdsc.hackathon.dto.TransferResponseDto;
 import com.gdsc.hackathon.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public class AccountTransferService {
     private final AccountRepository accountRepository;
 
     @Transactional
-    public void transferFunds(TransferRequestDto transferRequestDto){
+    public TransferResponseDto transferFunds(TransferRequestDto transferRequestDto){
         Account senderAccount = accountRepository.findByAccountNumber(transferRequestDto.getSenderAccountNumber());
         Account receiverAccount = accountRepository.findByAccountNumber(transferRequestDto.getReceiverAccountNumber());
 
@@ -25,6 +26,9 @@ public class AccountTransferService {
             throw new IllegalArgumentException("잔액이 부족합니다.");
         }
         senderAccount.setBalance(senderAccount.getBalance() - transferRequestDto.getAmount());
-        senderAccount.setBalance(senderAccount.getBalance() - transferRequestDto.getAmount());
+
+        TransferResponseDto responseDto = new TransferResponseDto();
+        responseDto.setBalance(senderAccount.getBalance());
+        return responseDto;
     }
 }

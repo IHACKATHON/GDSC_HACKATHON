@@ -19,7 +19,7 @@ public class Account {
     private String accountNumber;
 
     @Column(name = "ACCOUNT_BALANCE")
-    private int balance;
+    private int balance = 50000;
 
     @OneToOne(mappedBy = "account")
     private Member member;
