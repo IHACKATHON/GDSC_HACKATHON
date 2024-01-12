@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api") //아래의 코드들 앞에 /api가 붙는다.
 public class StoreController {
 
     private final StoreService storeService;
