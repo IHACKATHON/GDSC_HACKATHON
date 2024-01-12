@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class QrController {
+public class QRController {
 
     @PostMapping("/QR")
     public ResponseEntity<byte[]> generateQr (@RequestBody QRDto qrDto){

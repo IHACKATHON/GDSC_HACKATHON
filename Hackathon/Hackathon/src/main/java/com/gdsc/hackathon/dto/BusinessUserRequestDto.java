@@ -9,24 +9,21 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.math.BigDecimal;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRequestDto {
+public class BusinessUserRequestDto {
 
     private String email;
     private String password;
     private String name;
     private String accountNumber;
     private int balance;
-
-    public User toUser(PasswordEncoder passwordEncoder) {
+    public User toBusinessUser(PasswordEncoder passwordEncoder) {
         User user = User.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .role(Role.ROLE_USER)
+                .role(Role.ROLE_BUSINESS)
                 .name(name)
                 .build();
 
@@ -40,6 +37,7 @@ public class UserRequestDto {
 
         return user;
     }
+
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);

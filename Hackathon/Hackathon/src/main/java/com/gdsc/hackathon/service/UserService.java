@@ -2,10 +2,7 @@ package com.gdsc.hackathon.service;
 
 
 import com.gdsc.hackathon.domain.User;
-import com.gdsc.hackathon.dto.ChangePasswordDto;
-import com.gdsc.hackathon.dto.TokenDto;
-import com.gdsc.hackathon.dto.UserRequestDto;
-import com.gdsc.hackathon.dto.UserResponseDto;
+import com.gdsc.hackathon.dto.*;
 import com.gdsc.hackathon.jwt.TokenProvider;
 import com.gdsc.hackathon.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +34,13 @@ public class UserService {
         User user = userRequestDto.toUser(passwordEncoder);
         return UserResponseDto.of(userRepository.save(user));
     }
+
     @Transactional
-    public UserResponseDto googleSignup(UserRequestDto userRequestDto){
-        User user = userRequestDto.toGoogleUser();
+    public UserResponseDto businessSignup(BusinessUserRequestDto businessUserRequestDto){
+        if(userRepository.existsByEmail(businessUserRequestDto.getEmail())){
+            throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
+        }
+        User user = businessUserRequestDto.toBusinessUser(passwordEncoder);
         return UserResponseDto.of(userRepository.save(user));
     }
 

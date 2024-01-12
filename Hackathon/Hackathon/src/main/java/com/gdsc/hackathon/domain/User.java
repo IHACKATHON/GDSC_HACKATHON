@@ -25,20 +25,22 @@
         @Column(name = "USER_NAME", nullable = false)
         private String name;
 
-        @Column(name = "USER_ISBUSINESS")
-        private boolean isBusiness;
 
         @Enumerated(EnumType.STRING)
         @Column(name = "USER_ROLE", nullable = false)
         private Role role;
 
+        @OneToOne(cascade = CascadeType.ALL)
+        @JoinColumn(name = "ACCOUNT_ID")
+        private Account account;
+
         @Builder
-        public User(String email, String password, String name,Role role, boolean isBusiness){
+        public User(String email, String password, String name,Role role, Account account){
             this.email = email;
             this.password = password;
             this.name = name;
             this.role = role;
-            this.isBusiness = isBusiness;
+            this.account = new Account();
         }
 
     }
