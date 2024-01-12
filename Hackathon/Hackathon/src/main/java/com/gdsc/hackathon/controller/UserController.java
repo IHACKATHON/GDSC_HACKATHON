@@ -1,10 +1,7 @@
 package com.gdsc.hackathon.controller;
 
 import com.gdsc.hackathon.domain.User;
-import com.gdsc.hackathon.dto.ChangePasswordDto;
-import com.gdsc.hackathon.dto.TokenDto;
-import com.gdsc.hackathon.dto.UserRequestDto;
-import com.gdsc.hackathon.dto.UserResponseDto;
+import com.gdsc.hackathon.dto.*;
 import com.gdsc.hackathon.jwt.TokenProvider;
 import com.gdsc.hackathon.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +22,13 @@ public class UserController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
 
-    @PostMapping("/signup") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
+    @PostMapping("/signup/user") // localhost:8080/user/signup  일반 회원가입 ( 이메일, 비밀번호 포함 모든 정보 )
     public ResponseEntity<UserResponseDto> signup(@RequestBody UserRequestDto userRequestDto){
         return ResponseEntity.ok(userService.signup(userRequestDto));
     }
-    @PostMapping("/googleSignup") // localhost:8080/user/googleSignup  구글 회원가입 (이메일, 비밀번호 미포함 정보)
-    public ResponseEntity<UserResponseDto> googleSignup(@RequestBody UserRequestDto userRequestDto){
-        return ResponseEntity.ok(userService.googleSignup(userRequestDto));
+    @PostMapping("/signup/business")
+    public ResponseEntity<UserResponseDto> businessSignup(@RequestBody BusinessUserRequestDto businessUserRequestDto){
+        return ResponseEntity.ok(userService.businessSignup(businessUserRequestDto));
     }
 
     @PostMapping("/login") // localhost:8080/user/login    로그인 ( 토큰 발급 )
